@@ -7,7 +7,7 @@ import {
 import type { Octree } from "../octree";
 import { CONFIG } from "../config";
 
-let quadtreeLines: LineSegments;
+let octreeLines: LineSegments;
 const POINTS_PER_CUBE = 24;
 const VALUES_PER_CUBE = POINTS_PER_CUBE * 3;
 
@@ -23,12 +23,12 @@ export function initOctreeVisualizer() {
     color: 0x00ff00,
     opacity: 0.5,
   });
-  quadtreeLines = new LineSegments(geometry, material);
-  return quadtreeLines;
+  octreeLines = new LineSegments(geometry, material);
+  return octreeLines;
 }
 
-export function updateOctreeVisualizer<T>(quadtree: Octree<T>) {
-  const positions = quadtreeLines.geometry.attributes.position.array;
+export function updateOctreeVisualizer<T>(octree: Octree<T>) {
+  const positions = octreeLines.geometry.attributes.position.array;
   let index = 0;
 
   // Fonction récursive pour remplir le tableau de positions
@@ -133,10 +133,10 @@ export function updateOctreeVisualizer<T>(quadtree: Octree<T>) {
 
   console.log(index);
 
-  fillPositions(quadtree);
+  fillPositions(octree);
 
   // On indique à Three.js de mettre à jour le GPU
-  quadtreeLines.geometry.attributes.position.needsUpdate = true;
+  octreeLines.geometry.attributes.position.needsUpdate = true;
   // On cache les segments inutilisés en limitant le rendu
-  quadtreeLines.geometry.setDrawRange(0, index / 3);
+  octreeLines.geometry.setDrawRange(0, index / 3);
 }

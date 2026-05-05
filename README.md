@@ -1,6 +1,6 @@
-# Quadtree
+# Octree
 
-Custom quadtree
+Custom octree
 
 using:
 - deno to run

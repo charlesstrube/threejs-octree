@@ -19,7 +19,7 @@ const boundingBox = new Box3(
   new Vector3(halfBoundingBox, halfBoundingBox, halfBoundingBox),
 );
 
-// build quadtree
+// build octree
 const octree = new Octree<Particle>(boundingBox);
 const particles: Particle[] = [];
 for (let i = 0; i < CONFIG.pointCount; i += 1) {
@@ -33,9 +33,9 @@ for (let i = 0; i < CONFIG.pointCount; i += 1) {
   particles.push(particle);
 }
 
-// draw de quadtree
-const visualQuadtreeBoxes = initOctreeVisualizer();
-scene.add(visualQuadtreeBoxes);
+// draw de octree
+const visualOctreeBoxes = initOctreeVisualizer();
+scene.add(visualOctreeBoxes);
 
 // draw points
 
