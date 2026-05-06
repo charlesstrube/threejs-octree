@@ -88,9 +88,8 @@ export class Octree<T> {
     this.bounding.getSize(size);
     this.bounding.getCenter(center);
 
-    const width = size.x / 2;
-    const height = size.y / 2;
-    const depth = size.z / 2;
+    const min = this.bounding.min;
+    const max = this.bounding.max;
 
     /**
      * top view
@@ -122,43 +121,43 @@ export class Octree<T> {
      */
 
     const topNorthWestBox = new Box3(
-      new Vector3(center.x - width, center.y - height, center.z - depth),
-      new Vector3(center.x, center.y, center.z),
+      new Vector3(min.x, center.y, min.z),
+      new Vector3(center.x, max.y, center.z),
     );
 
     const topNorthEastBox = new Box3(
-      new Vector3(center.x, center.y - height, center.z - depth),
-      new Vector3(center.x + width, center.y, center.z),
+      new Vector3(center.x, center.y, min.z),
+      new Vector3(max.x, max.y, center.z),
     );
 
     const bottomNorthWestBox = new Box3(
-      new Vector3(center.x - width, center.y - height, center.z - depth),
+      new Vector3(min.x, min.y, min.z),
       new Vector3(center.x, center.y, center.z),
     );
 
     const bottomNorthEastBox = new Box3(
-      new Vector3(center.x, center.y - height, center.z - depth),
-      new Vector3(center.x + width, center.y, center.z),
+      new Vector3(center.x, min.y, min.z),
+      new Vector3(max.x, center.y, center.z),
     );
 
     const topSouthWestBox = new Box3(
-      new Vector3(center.x - width, center.y, depth),
-      new Vector3(center.x, center.y + height, center.z + depth),
+      new Vector3(min.x, center.y, center.z),
+      new Vector3(center.x, max.y, max.z),
     );
 
     const topSouthEastBox = new Box3(
-      new Vector3(center.x, center.y, depth),
-      new Vector3(center.x + width, center.y + height, center.z + depth),
+      new Vector3(center.x, center.y, center.z),
+      new Vector3(max.x, max.y, max.z),
     );
 
     const bottomSouthWestBox = new Box3(
-      new Vector3(center.x - width, center.y, depth),
-      new Vector3(center.x, center.y + height, center.z + depth),
+      new Vector3(min.x, min.y, center.z),
+      new Vector3(center.x, center.y, max.z),
     );
 
     const bottomSouthEastBox = new Box3(
-      new Vector3(center.x, center.y, depth),
-      new Vector3(center.x + width, center.y + height, center.z + depth),
+      new Vector3(center.x, min.y, center.z),
+      new Vector3(max.x, center.y, max.z),
     );
 
     const newDepth = this.depth + 1;

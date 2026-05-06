@@ -12,7 +12,7 @@ export function prepareScene() {
     0.1,
     1000,
   );
-  camera.position.z = 2;
+  camera.position.z = 3;
 
   const renderer = new WebGLRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
