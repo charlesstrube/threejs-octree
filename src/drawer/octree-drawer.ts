@@ -13,6 +13,8 @@ const VALUES_PER_CUBE = POINTS_PER_CUBE * 3;
 
 const MAX_OCTREE_NODES = CONFIG.pointCount * 2;
 
+let once = false;
+
 export function initOctreeVisualizer() {
   // 8 sommets par boîte (4 segments de 2 points pour faire un carré)
   const geometry = new BufferGeometry();
@@ -33,7 +35,8 @@ export function updateOctreeVisualizer<T>(octree: Octree<T>) {
 
   // Fonction récursive pour remplir le tableau de positions
   function fillPositions(node: Octree<T>) {
-    if (index + VALUES_PER_CUBE > positions.length) return;
+    if (index + VALUES_PER_CUBE > positions.length || node.list.length === 0)
+      return;
 
     const { min, max } = node.bounding;
 
@@ -124,19 +127,18 @@ export function updateOctreeVisualizer<T>(octree: Octree<T>) {
     positions[index++] = max.y;
     positions[index++] = max.z;
 
-    const children = node.getChildren();
-
-    for (const child of children) {
-      fillPositions(child);
+    if (!once) {
+      console.log(node.leaves);
+      once = true;
     }
   }
 
-  console.log(index);
-
   fillPositions(octree);
+
+  for (const child of octree.leaves) {
+    fillPositions(child);
+  }
 
   // On indique à Three.js de mettre à jour le GPU
   octreeLines.geometry.attributes.position.needsUpdate = true;
-  // On cache les segments inutilisés en limitant le rendu
-  octreeLines.geometry.setDrawRange(0, index / 3);
 }

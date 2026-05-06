@@ -18,7 +18,6 @@ export class Octree<T> {
 
   maxObjects: number;
   list: Element<T>[] = [];
-  subdivived: boolean = false;
 
   top?: Face<T>;
   bottom?: Face<T>;
@@ -31,7 +30,6 @@ export class Octree<T> {
 
   clear() {
     this.list = [];
-    this.subdivived = false;
     this.top = undefined;
     this.bottom = undefined;
   }
@@ -40,7 +38,7 @@ export class Octree<T> {
     return this.bounding.containsPoint(point);
   }
 
-  getChildren() {
+  get children() {
     if (!this.bottom || !this.top) {
       return [];
     }
@@ -54,12 +52,25 @@ export class Octree<T> {
     return [...get(this.bottom), ...get(this.top)];
   }
 
+  get leaves(): Octree<T>[] {
+    const leaves = [];
+    if (!this.subdivived) {
+      return [this];
+    }
+
+    for (const child of this.children) {
+      leaves.push(...child.leaves);
+    }
+
+    return leaves;
+  }
+
   insert(point: Vector3, data: T) {
     if (!this.isInside(point)) {
       return;
     }
 
-    if (this.list.length < this.maxObjects) {
+    if (!this.subdivived && this.list.length < this.maxObjects) {
       const element = { point, data };
       this.list.push(element);
       return;
@@ -67,15 +78,17 @@ export class Octree<T> {
 
     this.subdivide();
 
-    const insert = (face: Face<T>) => {
-      face.northWest.insert(point, data);
-      face.northEast.insert(point, data);
-      face.southWest.insert(point, data);
-      face.southEast.insert(point, data);
-    };
+    if (this.bottom) this.insertIntoFace(this.bottom, point, data);
+    if (this.top) this.insertIntoFace(this.top, point, data);
 
-    if (this.bottom) insert(this.bottom);
-    if (this.top) insert(this.top);
+    this.passToChildren();
+  }
+
+  insertIntoFace(face: Face<T>, point: Vector3, data: T) {
+    face.northWest.insert(point, data);
+    face.northEast.insert(point, data);
+    face.southWest.insert(point, data);
+    face.southEast.insert(point, data);
   }
 
   subdivide() {
@@ -174,8 +187,20 @@ export class Octree<T> {
       southWest: new Octree(bottomSouthWestBox, newDepth, this.maxObjects),
       southEast: new Octree(bottomSouthEastBox, newDepth, this.maxObjects),
     };
+  }
 
-    this.subdivived = true;
+  get subdivived() {
+    return this.bottom && this.top;
+  }
+
+  private passToChildren() {
+    for (const child of this.children) {
+      for (const item of this.list) {
+        child.insert(item.point, item.data);
+      }
+    }
+
+    this.list = [];
   }
 
   queryRange(range: Box3): Element<T>[] {
@@ -185,9 +210,10 @@ export class Octree<T> {
       return [];
     }
 
-    const points = this.list.filter((element) =>
-      range.containsPoint(element.point),
-    );
+    if (!this.subdivived)
+      return this.list.filter((element) => range.containsPoint(element.point));
+
+    const points = [];
 
     if (this.top?.northWest) {
       points.push(...this.top.northWest.queryRange(range));
