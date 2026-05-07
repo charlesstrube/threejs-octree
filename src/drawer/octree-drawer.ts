@@ -13,8 +13,6 @@ const VALUES_PER_CUBE = POINTS_PER_CUBE * 3;
 
 const MAX_OCTREE_NODES = CONFIG.pointCount * 2;
 
-let once = false;
-
 export function initOctreeVisualizer() {
   // 8 sommets par boîte (4 segments de 2 points pour faire un carré)
   const geometry = new BufferGeometry();
@@ -126,11 +124,6 @@ export function updateOctreeVisualizer<T>(octree: Octree<T>) {
     positions[index++] = min.x;
     positions[index++] = max.y;
     positions[index++] = max.z;
-
-    if (!once) {
-      console.log(node.leaves);
-      once = true;
-    }
   }
 
   fillPositions(octree);

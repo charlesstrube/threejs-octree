@@ -39,13 +39,11 @@ for (let i = 0; i < CONFIG.pointCount; i += 1) {
 }
 
 // draw de octree
-if (CONFIG.showOctree) {
-  const visualOctreeBoxes = initOctreeVisualizer();
-  scene.add(visualOctreeBoxes);
-}
+
+const visualOctreeBoxes = initOctreeVisualizer();
+scene.add(visualOctreeBoxes);
 
 // draw points
-
 const visualParticles = drawPoints(
   particles.map((particle) => particle.position),
   0xffffff,
