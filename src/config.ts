@@ -1,5 +1,6 @@
 export const CONFIG = {
-  boundingBoxSize: 3,
-  selectionSize: 1,
-  pointCount: 1000,
+  boundingBoxSize: 1,
+  selectionSize: 0.75,
+  pointCount: 5,
+  showOctree: false,
 };

@@ -6,7 +6,7 @@ export class Particle {
     Math.random() / 100 - 0.005,
     Math.random() / 100 - 0.005,
     Math.random() / 100 - 0.005,
-  ).clampLength(0, 0.0001);
+  ).clampLength(0, 0.0002);
   position: Vector3;
   randomForce = new Vector3();
   selected = false;

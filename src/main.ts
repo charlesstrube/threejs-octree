@@ -9,6 +9,11 @@ import { drawPoints, updatePoints } from "./drawer/points-drawer";
 import { Particle } from "./particle";
 import "./style.css";
 import { CONFIG } from "./config";
+import { Connector } from "./connector";
+import {
+  initConnectorVisualizer,
+  updateConnectorVisualizer,
+} from "./drawer/points-connector-drawer";
 
 const { camera, renderer, scene } = prepareScene();
 
@@ -34,8 +39,10 @@ for (let i = 0; i < CONFIG.pointCount; i += 1) {
 }
 
 // draw de octree
-const visualOctreeBoxes = initOctreeVisualizer();
-scene.add(visualOctreeBoxes);
+if (CONFIG.showOctree) {
+  const visualOctreeBoxes = initOctreeVisualizer();
+  scene.add(visualOctreeBoxes);
+}
 
 // draw points
 
@@ -45,13 +52,35 @@ const visualParticles = drawPoints(
 );
 scene.add(visualParticles);
 
+const a = initConnectorVisualizer();
+
+scene.add(a);
+
+const range = new Box3(
+  new Vector3(
+    -CONFIG.selectionSize / 2,
+    -CONFIG.selectionSize / 2,
+    -CONFIG.selectionSize / 2,
+  ),
+  new Vector3(
+    CONFIG.selectionSize / 2,
+    CONFIG.selectionSize / 2,
+    CONFIG.selectionSize / 2,
+  ),
+);
+const connector = new Connector(octree, range);
+
 drawScene(renderer, () => {
   octree.clear();
+  connector.clear();
   for (const particle of particles) {
     const position = particle.update();
     octree.insert(position, particle);
     particle.selected = false;
+    connector.add(particle.position, particle);
   }
+
+  updateConnectorVisualizer(connector);
 
   const selectedParticles = octree.queryRange(new Box3());
 
@@ -68,6 +97,8 @@ drawScene(renderer, () => {
     particlePoints.map((particle) => particle.position),
   );
 
-  updateOctreeVisualizer(octree);
+  if (CONFIG.showOctree) {
+    updateOctreeVisualizer(octree);
+  }
   renderer.render(scene, camera);
 });

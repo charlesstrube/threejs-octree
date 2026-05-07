@@ -1,6 +1,6 @@
 import { Box3, Vector3 } from "three";
 
-interface Element<T> {
+export interface OctreeElement<T> {
   point: Vector3;
   data: T;
 }
@@ -17,7 +17,7 @@ export class Octree<T> {
   depth: number;
 
   maxObjects: number;
-  list: Element<T>[] = [];
+  list: OctreeElement<T>[] = [];
 
   top?: Face<T>;
   bottom?: Face<T>;
@@ -203,7 +203,7 @@ export class Octree<T> {
     this.list = [];
   }
 
-  queryRange(range: Box3): Element<T>[] {
+  queryRange(range: Box3): OctreeElement<T>[] {
     if (
       !(this.bounding.intersectsBox(range) || this.bounding.containsBox(range))
     ) {
